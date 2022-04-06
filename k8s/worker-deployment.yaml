@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: worker
+  name: worker
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port:   '8080'
+    spec:
+      containers:
+        - image: broswen/worker:latest
+          name: worker
+          ports:
+            - containerPort: 8080
+          args:
+            - /bin/worker
+            - --leader
+            - http://leader-service:8080

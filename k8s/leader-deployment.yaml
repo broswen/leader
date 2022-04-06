@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: leader
+  name: leader
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: leader
+  template:
+    metadata:
+      labels:
+        app: leader
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port:   '8080'
+    spec:
+      containers:
+        - image: broswen/leader:latest
+          name: leader
+          ports:
+            - containerPort: 8080
