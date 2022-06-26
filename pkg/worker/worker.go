@@ -69,8 +69,10 @@ func (w *Worker) SendUpdates() <-chan error {
 }
 
 func (w *Worker) sendUpdate() error {
+	start := time.Now()
 	var err error
 	defer func() {
+		UpdateRequestDuration.WithLabelValues(w.ID).Observe(float64(time.Since(start).Milliseconds()))
 		if err != nil {
 			FailedUpdateCount.WithLabelValues(w.ID).Inc()
 		}
